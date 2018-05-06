@@ -103,7 +103,7 @@ type_ok(getfenv(print), 'table')
 is(getfenv(print), _G)
 
 error_like(function () getfenv(-3) end,
-           "^[^:]+:%d+: bad argument #1 to 'getfenv' %(level must be non%-negative%)",
+           "^[^:]+:%d+: bad argument #1 to 'getfenv' %(.-level.-%)",
            "function getfenv (negative)")
 
 error_like(function () getfenv(12) end,
@@ -304,7 +304,7 @@ is(f2(), 3)
 setfenv(1, save) -- restore
 
 error_like(function () setfenv(-3, {}) end,
-           "^[^:]+:%d+: bad argument #1 to 'setfenv' %(level must be non%-negative%)",
+           "^[^:]+:%d+: bad argument #1 to 'setfenv' %(.-level.-%)",
            "function setfenv (negative)")
 
 error_like(function () setfenv(12, {}) end,
@@ -368,7 +368,7 @@ is(tostring(nil), 'nil')
 is(tostring(true), 'true')
 is(tostring(false), 'false')
 like(tostring({}), '^table: 0?[Xx]?%x+$')
-like(tostring(print), '^function: 0?[Xx]?%x+$')
+like(tostring(print), '^function: 0?[Xx]?[fast]*#?%x+$')
 
 error_like(function () tostring() end,
            "^[^:]+:%d+: bad argument #1 to 'tostring' %(value expected%)",
@@ -381,7 +381,14 @@ eq_array({(unpack({'a','b','c'}))}, {'a'})
 eq_array({unpack({'a','b','c','d','e'},2,4)}, {'b','c','d'})
 eq_array({unpack({'a','b','c'},2,4)}, {'b','c'})
 
-is(xpcall(assert, nil), false, "function xpcall")
+if arg[-1] == 'luajit' then
+    error_like(function () xpcall(assert, nil) end,
+               "bad argument #2 to 'xpcall' %(function expected, got nil%)",
+               "function xpcall")
+    diag("LuaJIT intentional.")
+else
+    is(xpcall(assert, nil), false, "function xpcall")
+end
 
 function backtrace ()
     return 'not a back trace'

@@ -1,9 +1,27 @@
 
-VERSION := $(shell cd src && lua -e "require [[Test.More]]; print(Test.More._VERSION)")
+LUA     := lua
+VERSION := $(shell cd src && $(LUA) -e "require [[Test.More]]; print(Test.More._VERSION)")
 TARBALL := lua-testmore-$(VERSION).tar.gz
 ifndef REV
   REV   := 1
 endif
+
+ifndef DESTDIR
+  DESTDIR := /usr/local
+endif
+BINDIR  := $(DESTDIR)/bin
+LIBDIR  := $(DESTDIR)/share/lua/5.1
+
+install:
+	mkdir -p $(LIBDIR)/Test/Builder
+	cp src/Test/More.lua            $(LIBDIR)/Test
+	cp src/Test/Builder.lua         $(LIBDIR)/Test
+	cp src/Test/Builder/Tester.lua  $(LIBDIR)/Test/Builder
+
+uninstall:
+	rm -f $(LIBDIR)/Test/More.lua
+	rm -f $(LIBDIR)/Test/Builder.lua
+	rm -f $(LIBDIR)/Test/Builder/Tester.lua
 
 manifest_pl := \
 use strict; \
@@ -59,9 +77,15 @@ dist: $(TARBALL)
 rockspec: $(TARBALL)
 	perl -e '$(rockspec_pl)' rockspec.in > rockspec/lua-testmore-$(VERSION)-$(REV).rockspec
 
-export LUA_PATH=;;./src/?.lua
+check: test
+
 test:
-	prove --exec=lua test/*.t
+	cd src && prove --exec=$(LUA) ../test/*.t
+
+coverage:
+	rm -f src/luacov.stats.out src/luacov.report.out
+	cd src && prove --exec="$(LUA) -lluacov" ../test/*.t
+	cd src && luacov
 
 html:
 	xmllint --noout --valid doc/*.html

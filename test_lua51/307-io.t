@@ -31,10 +31,13 @@ See "Programming in Lua", section 21 "The I/O Library".
 
 require 'Test.More'
 
-plan(62)
+plan(61)
 
 is(getfenv(io.lines), _G, "environment")
 local env = debug.getfenv(io.lines)
+if arg[-1] == 'luajit' then
+    todo("LuaJIT intentional. It is an implementation-defined behavior.", 3)
+end
 type_ok(env.__close, 'function')
 is(env[1], io.stdin)
 is(env[2], io.stdout)
@@ -68,11 +71,6 @@ is(io.close(f), true, "function close")
 error_like(function () io.close(f) end,
            "^[^:]+:%d+: attempt to use a closed file",
            "function close (closed)")
-
-todo("XXX")
-error_like(function () io.flush(f) end,
-           "^[^:]+:%d+: attempt to use a closed file",
-           "function flush (closed)")
 
 is(io.type("not a file"), nil, "function type")
 f = io.open('file.txt')

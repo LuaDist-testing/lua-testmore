@@ -3,9 +3,9 @@
 -- lua-TestMore : <http://testmore.luaforge.net/>
 --
 
-local debug = debug
-local io = io
-local os = os
+local debug = require 'debug'
+local io = require 'io'
+local os = require 'os'
 local error = error
 local ipairs = ipairs
 local print = print
@@ -92,7 +92,7 @@ function plan (self, arg)
         return true
     elseif type(arg) ~= 'number' then
         error("Need a number of tests")
-    elseif arg <= 0 then
+    elseif arg < 0 then
         error("Number of tests must be a positive integer.  You gave it '" .. arg .."'.")
     else
         self.expected_tests = arg

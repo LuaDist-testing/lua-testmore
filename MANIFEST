@@ -47,6 +47,7 @@ test_lua51/102-function.t
 test_lua51/103-nil.t
 test_lua51/104-number.t
 test_lua51/105-string.t
+test_lua51/106-table.t
 test_lua51/107-thread.t
 test_lua51/108-userdata.t
 test_lua51/200-examples.t
@@ -61,6 +62,7 @@ test_lua51/222-constructor.t
 test_lua51/223-iterator.t
 test_lua51/231-metatable.t
 test_lua51/232-object.t
+test_lua51/241-standalone.t
 test_lua51/301-basic.t
 test_lua51/303-package.t
 test_lua51/304-string.t
@@ -69,6 +71,7 @@ test_lua51/306-math.t
 test_lua51/307-io.t
 test_lua51/308-os.t
 test_lua51/309-debug.t
+test_lua51/310-stdin.t
 test_lua51/314-regex.t
 test_lua51/Makefile
 test_lua51/makefile.mak

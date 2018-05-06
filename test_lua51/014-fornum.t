@@ -89,7 +89,9 @@ for i = 5, 7, 0 do
     v = true
     break -- avoid infinite loop with LuaJIT
 end
-if v then
+if arg[-1] == 'luajit' then
+    print("not ok 28 - for 5, 7, 0 # TODO # LuaJIT intentional.")
+elseif v then
     print("not ok 28 - for 5, 7, 0")
 else
     print("ok 28 - for 5, 7, 0")
@@ -118,10 +120,12 @@ local a = {}
 for i = 1, 10 do
     a[i] = function () return i end
 end
-if a[5]() == 5 then
+local v = a[5]()
+if v == 5 then
     print("ok 36 - for & upval")
 else
     print("not ok 36 - for & upval")
+    print("#", v)
 end
 
 -- Local Variables:
