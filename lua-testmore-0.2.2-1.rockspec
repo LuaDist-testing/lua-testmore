@@ -1,17 +1,17 @@
 -- This file was automatically generated for the LuaDist project.
 
 package = 'lua-TestMore'
-version = '0.2.1-1'
+version = '0.2.2-1'
 -- LuaDist source
 source = {
-  tag = "0.2.1-1",
+  tag = "0.2.2-1",
   url = "git://github.com/LuaDist-testing/lua-testmore.git"
 }
 -- Original source
 -- source = {
---     url = 'http://cloud.github.com/downloads/fperrad/lua-TestMore/lua-testmore-0.2.1.tar.gz',
---     md5 = '7ffdeb47dcfe3a247ac2294b16526d4a',
---     dir = 'lua-TestMore-0.2.1',
+--     url = 'http://cloud.github.com/downloads/fperrad/lua-TestMore/lua-testmore-0.2.2.tar.gz',
+--     md5 = '12dfd2386b09f06d3342968a12848f02',
+--     dir = 'lua-TestMore-0.2.2',
 -- }
 description = {
     summary = "an Unit Testing Framework",
