@@ -2,7 +2,7 @@
 --
 -- lua-TestMore : <http://fperrad.github.com/lua-TestMore/>
 --
--- Copyright (C) 2009-2010, Perrad Francois
+-- Copyright (C) 2009-2011, Perrad Francois
 --
 -- This code is licensed under the terms of the MIT/X11 license,
 -- like Lua itself.
@@ -31,7 +31,7 @@ See "Programming in Lua", section 19 "The Table Library".
 
 require 'Test.More'
 
-plan(47)
+plan(46)
 
 t = {'a','b','c','d','e'}
 is(table.concat(t), 'abcde', "function concat")
@@ -52,13 +52,6 @@ t = {'a','b',true,'d','e'}
 error_like(function () table.concat(t, ',') end,
            "^[^:]+:%d+: invalid value %(boolean%) at index 3 in table for 'concat'",
            "function concat (non-string)")
-
-if arg[-1] == 'luajit' then
-    todo("LuaJIT intentional. getn", 1)
-end
-error_like(function () table.getn() end,
-           "^[^:]+:%d+: deprecated function",
-           "function getn")
 
 a = {10, 20, 30}
 table.insert(a, 1, 15)
@@ -81,20 +74,6 @@ error_like(function () table.insert(t, 2, 'g', 'h')  end,
            "^[^:]+:%d+: wrong number of arguments to 'insert'",
            "function insert (too many arg)")
 
-if arg[-1] == 'luajit' then
-    todo("LuaJIT intentional. foreach", 1)
-end
-error_like(function () table.foreach() end,
-           "^[^:]+:%d+: deprecated function",
-           "function foreach")
-
-if arg[-1] == 'luajit' then
-    todo("LuaJIT intentional. foreachi", 1)
-end
-error_like(function () table.foreachi() end,
-           "^[^:]+:%d+: deprecated function",
-           "function foreachi")
-
 if (platform and platform.compat)
 or (arg[-1] == 'luajit') then
     t = {}
@@ -108,26 +87,26 @@ or (arg[-1] == 'luajit') then
     a[10000] = 1
     is(table.maxn(a), 10000)
 else
-    error_like(function () table.maxn() end,
-               "^[^:]+:%d+: function 'maxn' is deprecated",
-               "function maxn (deprecated)")
-    skip("module (deprecated)", 3)
+    is(table.maxn, nil, "maxn (removed)")
+    skip("maxn (removed)", 3)
 end
 
 if arg[-1] == 'luajit' then
-    skip("LuaJIT TODO. pack", 4)
+    skip("LuaJIT TODO. pack", 6)
 else
-    t = table.pack("abc", "def", "ghi")
+    t, n = table.pack("abc", "def", "ghi")
     eq_array(t, {
         "abc",
         "def",
         "ghi"
     }, "function pack")
     is(t.n, 3)
+    is(n, 3)
 
-    t = table.pack()
+    t, n = table.pack()
     eq_array(t, {}, "function pack (no element)")
     is(t.n, 0)
+    is(n, 0)
 end
 
 t = {}
@@ -243,10 +222,6 @@ error_like(function ()
            "^[^:]+:%d+: invalid order function for sorting",
            "function sort (bad func)")
 
-if arg[-1] == 'luajit' then
-    diag("LuaJIT TODO. unpack")
-    table.unpack = unpack
-end
 eq_array({table.unpack({})}, {}, "function unpack")
 eq_array({table.unpack({'a'})}, {'a'})
 eq_array({table.unpack({'a','b','c'})}, {'a','b','c'})

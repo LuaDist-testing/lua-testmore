@@ -2,7 +2,7 @@
 --
 -- lua-TestMore : <http://fperrad.github.com/lua-TestMore/>
 --
--- Copyright (C) 2009-2010, Perrad Francois
+-- Copyright (C) 2009-2011, Perrad Francois
 --
 -- This code is licensed under the terms of the MIT/X11 license,
 -- like Lua itself.
@@ -31,18 +31,9 @@ See "Programming in Lua", section 23 "The Debug Library".
 
 require 'Test.More'
 
-plan(38)
+plan(51)
 
 debug = require 'debug'
-
-if arg[-1] == 'luajit' then
-    skip("LuaJIT: getuservalue", 2)
-else
-    local u = debug.getuservalue(require 'io'.stdout)
-    type_ok(u, 'table', "function getuservalue")
-    u = debug.getuservalue(debug)
-    is(u, nil)
-end
 
 info = debug.getinfo(is)
 type_ok(info, 'table', "function getinfo (function)")
@@ -85,7 +76,17 @@ end
 t = {}
 is(debug.getmetatable(t), nil, "function getmetatable")
 t1 = {}
-setmetatable(t, t1)
+debug.setmetatable(t, t1)
+is(debug.getmetatable(t), t1)
+
+a = true
+is(debug.getmetatable(a), nil)
+debug.setmetatable(a, t1)
+is(debug.getmetatable(t), t1)
+
+a = 3.14
+is(debug.getmetatable(a), nil)
+debug.setmetatable(a, t1)
 is(debug.getmetatable(t), t1)
 
 local reg = debug.getregistry()
@@ -96,12 +97,23 @@ local name = debug.getupvalue(plan, 1)
 type_ok(name, 'string', "function getupvalue")
 
 debug.sethook()
-hook = debug.gethook()
+hook, mask, count = debug.gethook()
 is(hook, nil, "function gethook")
+is(mask, '')
+is(count, 0)
 local function f () end
-debug.sethook(f, 'c')
-hook = debug.gethook()
+debug.sethook(f, 'c', 42)
+hook , mask, count = debug.gethook()
 is(hook, f, "function gethook")
+is(mask, 'c')
+is(count, 42)
+
+co = coroutine.create(function () print "thread" end)
+hook = debug.gethook(co)
+if arg[-1] == 'luajit' then
+    todo("LuaJIT TODO. debug.gethook(thread)", 1)
+end
+is(hook, nil, "function gethook(thread)")
 
 local name = debug.setlocal(0, 1, 0)
 type_ok(name, 'string', "function setlocal (level)")
@@ -115,8 +127,14 @@ error_like(function () debug.setlocal(42, 1, true) end,
 
 t = {}
 t1 = {}
-is(debug.setmetatable(t, t1), true, "function setmetatable")
+if arg[-1] == 'luajit' then
+    todo("LuaJIT TODO. debug.setmetatable", 1)
+end
+is(debug.setmetatable(t, t1), t, "function setmetatable")
 is(getmetatable(t), t1)
+
+error_like(function () debug.setmetatable(t, true) end,
+           "^[^:]+:%d+: bad argument #2 to 'setmetatable' %(nil or table expected%)")
 
 local name = debug.setupvalue(plan, 1, require 'Test.Builder':new())
 type_ok(name, 'string', "function setupvalue")
@@ -125,20 +143,31 @@ local name = debug.setupvalue(plan, 42, true)
 is(name, nil)
 
 if arg[-1] == 'luajit' then
-    skip("LuaJIT: setuservalue", 3)
+    skip("LuaJIT: setuservalue", 7)
 else
     local u = io.tmpfile()
     local old = debug.getuservalue(u)
-    r = debug.setuservalue(u, nil)
+    is(old, nil, "function getuservalue")
+    is(debug.getuservalue(true), nil)
+    local data = {}
+    r = debug.setuservalue(u, data)
     is(r, u, "function setuservalue")
-    is(debug.getuservalue(u), nil)
+    is(debug.getuservalue(u), data)
     r = debug.setuservalue(u, old)
     is(debug.getuservalue(u), old)
+
+    error_like(function () debug.setuservalue({}, data) end,
+               "^[^:]+:%d+: bad argument #1 to 'setuservalue' %(userdata expected, got table%)")
+
+    error_like(function () debug.setuservalue(u, true) end,
+               "^[^:]+:%d+: bad argument #2 to 'setuservalue' %(table expected, got boolean%)")
 end
 
 like(debug.traceback(), "^stack traceback:\n", "function traceback")
 
 like(debug.traceback("message\n"), "^message\n\nstack traceback:\n", "function traceback with message")
+
+like(debug.traceback(false), "false", "function traceback")
 
 if arg[-1] == 'luajit' then
     skip("LuaJIT: upvalueid", 1)
@@ -150,13 +179,13 @@ end
 if arg[-1] == 'luajit' then
     skip("LuaJIT: upvaluejoin", 2)
 else
-    debug.upvaluejoin (like, 1, unlike, 1)
+    debug.upvaluejoin (pass, 1, fail, 1)
 
     error_like(function () debug.upvaluejoin(true, 1, nil, 1) end,
                "bad argument #1 to 'upvaluejoin' %(function expected, got boolean%)",
                "function upvaluejoin (bad arg)")
 
-    error_like(function () debug.upvaluejoin(like, 1, true, 1) end,
+    error_like(function () debug.upvaluejoin(pass, 1, true, 1) end,
                "bad argument #3 to 'upvaluejoin' %(function expected, got boolean%)",
                "function upvaluejoin (bad arg)")
 end

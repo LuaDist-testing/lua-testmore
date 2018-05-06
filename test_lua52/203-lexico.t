@@ -27,7 +27,7 @@ L<http://www.lua.org/manual/5.2/manual.html#3.1>.
 
 require 'Test.More'
 
-plan(35)
+plan(37)
 
 is("\65", "A")
 is("\065", "A")
@@ -46,30 +46,36 @@ is(string.byte("\\"), 92)
 
 is(string.len("A\0B"), 3)
 
-f, msg = loadstring [[a = "A\300"]]
+f, msg = load [[a = "A\300"]]
 like(msg, "^[^:]+:%d+: .- escape .- near")
 
-f, msg = loadstring [[a = "A\xyz"]]
+f, msg = load [[a = "A\xyz"]]
 like(msg, "^[^:]+:%d+: .- near")
 
-f, msg = loadstring [[a = " unfinished string ]]
+if arg[-1] == 'luajit' then
+    todo("LuaJIT.")
+end
+f, msg = load [[a = "A\Z"]]
+like(msg, "^[^:]+:%d+: .- escape .- near")
+
+f, msg = load [[a = " unfinished string ]]
 like(msg, "^[^:]+:%d+: unfinished string near")
 
-f, msg = loadstring [[a = " unfinished string
+f, msg = load [[a = " unfinished string
 ]]
 like(msg, "^[^:]+:%d+: unfinished string near")
 
-f, msg = loadstring [[a = " unfinished string \
+f, msg = load [[a = " unfinished string \
 ]]
 like(msg, "^[^:]+:%d+: unfinished string near")
 
-f, msg = loadstring [[a = " unfinished string \]]
+f, msg = load [[a = " unfinished string \]]
 like(msg, "^[^:]+:%d+: unfinished string near")
 
-f, msg = loadstring "a = [[ unfinished long string "
+f, msg = load "a = [[ unfinished long string "
 like(msg, "^[^:]+:%d+: unfinished long string near")
 
-f, msg = loadstring "a = [== invalid long string delimiter "
+f, msg = load "a = [== invalid long string delimiter "
 like(msg, "^[^:]+:%d+: invalid long string delimiter near")
 
 a = 'alo\n123"'
@@ -81,10 +87,10 @@ is([[alo
 is([==[
 alo
 123"]==], a)
-is("alo\n\*
+is("alo\n\z
 123\"", a)
 
-f, msg = loadstring [[a = " escape \* unauthorized
+f, msg = load [[a = " escape \z unauthorized
 new line" ]]
 like(msg, "^[^:]+:%d+: unfinished string near")
 
@@ -94,6 +100,9 @@ is(0.31416E1, 3.1416)
 is(0xff, 255)
 is(0x56, 86)
 
+f, msg = load [[a = 12e34e56]]
+like(msg, "^[^:]+:%d+: malformed number near")
+
 --[===[
 --[[
 --[=[
@@ -102,7 +111,7 @@ is(0x56, 86)
 --]]
 --]===]
 
-f, msg = loadstring "  --[[ unfinished long comment "
+f, msg = load "  --[[ unfinished long comment "
 like(msg, "^[^:]+:%d+: unfinished long comment near")
 
 -- Local Variables:

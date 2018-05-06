@@ -2,7 +2,7 @@
 --
 -- lua-TestMore : <http://fperrad.github.com/lua-TestMore/>
 --
--- Copyright (C) 2009-2010, Perrad Francois
+-- Copyright (C) 2009-2011, Perrad Francois
 --
 -- This code is licensed under the terms of the MIT/X11 license,
 -- like Lua itself.
@@ -29,7 +29,7 @@ See "Programming in Lua", section 9 "Coroutines".
 
 require 'Test.More'
 
-plan(20)
+plan(30)
 
 --[[ ]]
 output = {}
@@ -71,6 +71,15 @@ coroutine.resume(co)
 is(output, 'hi')
 is(coroutine.status(co), 'dead')
 
+error_like(function () coroutine.create(true) end,
+           "^[^:]+:%d+: bad argument #1 to 'create' %(function expected, got boolean%)")
+
+error_like(function () coroutine.resume(true) end,
+           "^[^:]+:%d+: bad argument #1 to 'resume' %(coroutine expected%)")
+
+error_like(function () coroutine.status(true) end,
+           "^[^:]+:%d+: bad argument #1 to 'status' %(coroutine expected%)")
+
 --[[ ]]
 output = {}
 co = coroutine.create(function ()
@@ -82,9 +91,6 @@ co = coroutine.create(function ()
 
 coroutine.resume(co)
 thr, ismain = coroutine.running(co)
-if arg[-1] == 'luajit' then
-    todo("LuaJIT. running", 2)
-end
 type_ok(thr, 'thread', "running")
 is(ismain, true, "running")
 is(coroutine.status(co), 'suspended', "basics")
@@ -124,6 +130,17 @@ end)
 eq_array({co("Hello")}, {"Hello"})
 eq_array({co("World")}, {true, "World"})
 
+co = coroutine.wrap(function(...)
+  function backtrace ()
+    return 'not a back trace'
+  end
+  return xpcall(function(...)
+    return coroutine.yield(...)
+  end, backtrace, ...)
+end)
+eq_array({co("Hello")}, {"Hello"})
+eq_array({co("World")}, {true, "World"})
+
 --[[ ]]
 local output = {}
 co = coroutine.wrap(function()
@@ -145,6 +162,26 @@ eq_array(output, {true, false})
 --[[ ]]
 co = coroutine.wrap(print)
 type_ok(co, 'function')
+
+error_like(function () coroutine.wrap(true) end,
+           "^[^:]+:%d+: bad argument #1 to 'wrap' %(function expected, got boolean%)")
+
+co = coroutine.wrap(function () error"in coro" end)
+error_like(function () co() end,
+           "^[^:]+:%d+: [^:]+:%d+: in coro$")
+
+--[[ ]]
+co = coroutine.create(function ()
+        error "in coro"
+    end)
+r, msg = coroutine.resume(co)
+is(r, false)
+like(msg, "^[^:]+:%d+: in coro$")
+
+--[[ ]]
+error_like(function () coroutine.yield() end,
+           "attempt to yield")
+
 
 -- Local Variables:
 --   mode: lua

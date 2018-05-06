@@ -5,10 +5,13 @@ Makefile
 README.md
 doc/Makefile
 doc/index.html
+doc/socketoutput.html
+doc/testbuilder.html
 doc/testmore.html
 rockspec.in
 src/Test/Builder.lua
 src/Test/Builder/NoOutput.lua
+src/Test/Builder/SocketOutput.lua
 src/Test/Builder/Tester.lua
 src/Test/Builder/Tester/File.lua
 src/Test/More.lua
@@ -34,6 +37,7 @@ test/plan_skip_all.t
 test/require_ok.t
 test/skip.t
 test/skipall.t
+test/socket.t
 test/todo.t
 test/type_ok.t
 test_lua51/000-sanity.t
@@ -110,6 +114,7 @@ test_lua52/223-iterator.t
 test_lua52/231-metatable.t
 test_lua52/232-object.t
 test_lua52/241-standalone.t
+test_lua52/242-luac.t
 test_lua52/301-basic.t
 test_lua52/303-package.t
 test_lua52/304-string.t

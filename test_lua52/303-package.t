@@ -2,7 +2,7 @@
 --
 -- lua-TestMore : <http://fperrad.github.com/lua-TestMore/>
 --
--- Copyright (C) 2009-2010, Perrad Francois
+-- Copyright (C) 2009-2011, Perrad Francois
 --
 -- This code is licensed under the terms of the MIT/X11 license,
 -- like Lua itself.
@@ -29,7 +29,7 @@ L<http://www.lua.org/manual/5.2/manual.html#6.3>.
 
 require 'Test.More'
 
-plan(31)
+plan(33)
 
 ok(package.loaded._G, "table package.loaded")
 ok(package.loaded.coroutine)
@@ -45,29 +45,35 @@ type_ok(package.path, 'string')
 type_ok(package.preload, 'table', "table package.preload")
 is(# package.preload, 0)
 
+if (platform and platform.compat)
+or (arg[-1] == 'luajit') then
+    type_ok(package.loaders, 'table', "table package.loaders")
+    if arg[-1] == 'luajit' then
+        todo("LuaJIT TODO. package.searchers", 1)
+    end
+    is(package.searchers, package.loaders, "alias")
+else
+    type_ok(package.searchers, 'table', "table package.searchers")
+    is(package.loaders, nil)
+end
+
 m = {}
 if (platform and platform.compat)
 or (arg[-1] == 'luajit') then
     package.seeall(m)
     m.pass("function package.seeall")
 else
-    error_like(function () package.seeall(m) end,
-               "^[^:]+:%d+: deprecated function",
-               "function package.seeall (deprecated)")
+    is(package.seeall, nil, "package.seeall (removed)")
 end
 
 local m = require 'Test.More'
 m.ok(true, "function require")
 is(m, package.loaded['Test.More'])
 
-if arg[-1] == 'luajit' then
-    skip("LuaJIT TODO. searchpath", 2)
-else
-    p = package.searchpath('Test.More', package.path)
-    type_ok(p, 'string', "searchpath")
-    p = package.searchpath('Test.More', 'bad path')
-    is(p, nil)
-end
+p = package.searchpath('Test.More', package.path)
+type_ok(p, 'string', "searchpath")
+p = package.searchpath('Test.More', 'bad path')
+is(p, nil)
 
 f = io.open('complex.lua', 'w')
 f:write [[
@@ -199,10 +205,8 @@ or (arg[-1] == 'luajit') then
     _G.type_ok(_G.modz, 'table')
     _G.is(_G.modz, _G.package.loaded.modz)
 else
-    error_like(function () module('mod') end,
-               "^[^:]+:%d+: deprecated function",
-               "function module (deprecated)")
-    skip("module (deprecated)", 5)
+    is(module, nil, "module (removed)")
+    skip("module (removed)", 5)
 end
 
 -- Local Variables:

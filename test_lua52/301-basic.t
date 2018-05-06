@@ -2,7 +2,7 @@
 --
 -- lua-TestMore : <http://fperrad.github.com/lua-TestMore/>
 --
--- Copyright (C) 2009-2010, Perrad Francois
+-- Copyright (C) 2009-2011, Perrad Francois
 --
 -- This code is licensed under the terms of the MIT/X11 license,
 -- like Lua itself.
@@ -29,7 +29,7 @@ L<http://www.lua.org/manual/5.2/manual.html#6.1>.
 
 require 'Test.More'
 
-plan(145)
+plan(164)
 
 if arg[-1] == 'luajit' then
     like(_VERSION, '^Lua 5%.1', "variable _VERSION")
@@ -117,13 +117,6 @@ error_like(function () dofile('foo.lua') end,
            "function dofile (syntax error)")
 os.remove('foo.lua') -- clean up
 
-if arg[-1] == 'luajit' then
-    todo("LuaJIT intentional. getfenv", 1)
-end
-error_like(function () getfenv() end,
-           "^[^:]+:%d+: getfenv/setfenv deprecated",
-           "function getfenv (deprecated)")
-
 a = {'a','b','c'}
 local f, v, s = ipairs(a)
 type_ok(f, 'function', "function ipairs")
@@ -142,31 +135,94 @@ s, v = f(a, s)
 is(s, nil)
 is(v, nil)
 
-if arg[-1] == 'luajit' then
-    skip("LuaJIT. load (str)", 2)
-else
-    f = load([[
+t = { [[
+function bar (x)
+    return x
+end
+]] }
+i = 0
+function reader ()
+    i = i + 1
+    return t[i]
+end
+f, msg = load(reader)
+if msg then
+    diag(msg)
+end
+type_ok(f, 'function', "function load(reader)")
+is(bar, nil)
+f()
+is(bar('ok'), 'ok')
+bar = nil
+
+t = { [[
+function baz (x)
+    return x
+end
+]] }
+i = -1
+function reader ()
+    i = i + 1
+    return t[i]
+end
+f, msg = load(reader)
+if msg then
+    diag(msg)
+end
+type_ok(f, 'function', "function load(pathological reader)")
+f()
+is(baz, nil)
+
+t = { [[?syntax error?]] }
+i = 0
+f, msg = load(reader, "errorchunk")
+is(f, nil, "function load(syntax error)")
+like(msg, "^%[string \"errorchunk\"%]:%d+:")
+
+f = load(function () return nil end)
+type_ok(f, 'function', "when reader returns nothing")
+
+f, msg = load(function () return {} end)
+is(f, nil, "reader function must return a string")
+like(msg, "^[^:]+:%d+: reader function must return a string")
+f = load([[
 function bar (x)
     return x
 end
 ]])
-    is(bar, nil, "function load")
-    f()
-    is(bar('ok'), 'ok')
-end
+is(bar, nil, "function load(str)")
+f()
+is(bar('ok'), 'ok')
+bar = nil
 
 if arg[-1] == 'luajit' then
-    skip("LuaJIT intentional. loadin", 2)
+    skip("LuaJIT. load with env", 2)
 else
-    f = loadin(_G, [[
-function baz (x)
+    env = {}
+    f = load([[
+function bar (x)
     return x
 end
-]])
-    is(baz, nil, "function load")
+]], "from string", 't', env)
+    is(env.bar, nil, "function load(str)")
     f()
-    is(baz('ok'), 'ok')
+    is(env.bar('ok'), 'ok')
 end
+
+f, msg = load([[?syntax error?]], "errorchunk")
+is(f, nil, "function load(syntax error)")
+like(msg, "^%[string \"errorchunk\"%]:%d+:")
+
+if arg[-1] == 'luajit' then
+    todo("LuaJIT TODO. mode", 3)
+end
+f, msg = load([[print 'ok']], "chunk txt", 'b')
+like(msg, "attempt to load a text chunk")
+is(f, nil, "mode")
+
+f, msg = load("\x1bLua", "chunk bin", 't')
+like(msg, "attempt to load a binary chunk")
+is(f, nil, "mode")
 
 f = io.open('foo.lua', 'w')
 f:write[[
@@ -194,6 +250,14 @@ is(f, nil, "function loadfile (syntax error)")
 like(msg, '^foo%.lua:%d+:')
 os.remove('foo.lua') -- clean up
 
+if (platform and platform.compat)
+or (arg[-1] == 'luajit') then
+    ok(loadstring[[i = i + 1]], "function loadstring")
+else
+    is(loadstring, nil, "function loadstring (removed)")
+    loadstring = load
+end
+
 f = loadstring([[i = i + 1]])
 i = 0
 f()
@@ -211,16 +275,6 @@ is(g(), 1)
 f, msg = loadstring([[?syntax error?]])
 is(f, nil, "function loadstring (syntax error)")
 like(msg, '^%[string "%?syntax error%?"%]:%d+:')
-
-a = newproxy(true)
-type_ok(a, 'userdata', "newproxy")
-type_ok(getmetatable(a), 'table')
-b = newproxy(a)
-type_ok(b, 'userdata', "newproxy")
-is(getmetatable(a), getmetatable(b))
-c = newproxy(false)
-type_ok(c, 'userdata', "newproxy")
-is(getmetatable(c), nil)
 
 t = {'a','b','c'}
 a = next(t, nil)
@@ -247,6 +301,10 @@ a = next(t, 1)
 is(a, 2)
 a = next(t, 3)
 is(a, nil)
+
+t = {}
+a = next(t, nil)
+is(a, nil, "function next (empty table)")
 
 a = {'a','b','c'}
 local f, v, s = pairs(a)
@@ -291,6 +349,16 @@ is(rawequal(t, 2), false)
 is(rawequal(print, format), false)
 is(rawequal(print, 2), false)
 
+if arg[-1] == 'luajit' then
+    skip("LuaJIT TODO. rawlen", 3)
+else
+    is(rawlen("text"), 4, "function rawlen (string)")
+    is(rawlen({ 'a', 'b', 'c'}), 3, "function rawlen (table)")
+    error_like(function () a = rawlen(true) end,
+               "^[^:]+:%d+: bad argument #1 to 'rawlen' %(table or string expected%)",
+               "function rawlen (bad arg)")
+end
+
 t = {a = 'letter a', b = 'letter b'}
 is(rawget(t, 'a'), 'letter a', "function rawget")
 
@@ -298,22 +366,26 @@ t = {}
 is(rawset(t, 'a', 'letter a'), t, "function rawset")
 is(t.a, 'letter a')
 
+error_like(function () t = {}; rawset(t, nil, 42) end,
+           "^table index is nil",
+           "function rawset (table index is nil)")
+
 is(select('#'), 0, "function select")
 is(select('#','a','b','c'), 3)
 eq_array({select(1,'a','b','c')}, {'a','b','c'})
 eq_array({select(3,'a','b','c')}, {'c'})
 eq_array({select(5,'a','b','c')}, {})
+eq_array({select(-1,'a','b','c')}, {'c'})
+eq_array({select(-2,'a','b','c')}, {'b', 'c'})
+eq_array({select(-3,'a','b','c')}, {'a', 'b', 'c'})
 
 error_like(function () select(0,'a','b','c') end,
            "^[^:]+:%d+: bad argument #1 to 'select' %(index out of range%)",
            "function select (out of range)")
 
-if arg[-1] == 'luajit' then
-    todo("LuaJIT intentional. setfenv", 1)
-end
-error_like(function () setfenv() end,
-           "^[^:]+:%d+: getfenv/setfenv deprecated",
-           "function setfenv (deprecated)")
+error_like(function () select(-4,'a','b','c') end,
+           "^[^:]+:%d+: bad argument #1 to 'select' %(index out of range%)",
+           "function select (out of range)")
 
 is(type("Hello world"), 'string', "function type")
 is(type(10.4*3), 'number')
@@ -380,9 +452,15 @@ if arg[-1] == 'luajit' then
     error_like(function () xpcall(assert, nil) end,
                "bad argument #2 to 'xpcall' %(function expected, got nil%)",
                "function xpcall")
+    error_like(function () xpcall(assert) end,
+               "bad argument #2 to 'xpcall' %(function expected, got no value%)",
+               "function xpcall")
     diag("LuaJIT intentional. xpcall")
 else
     is(xpcall(assert, nil), false, "function xpcall")
+    error_like(function () xpcall(assert) end,
+               "^[^:]+:%d+: bad argument #2 to 'xpcall' %(value expected%)",
+               "function xpcall (no arg)")
 end
 
 function backtrace ()

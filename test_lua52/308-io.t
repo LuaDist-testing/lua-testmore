@@ -31,7 +31,7 @@ See "Programming in Lua", section 21 "The I/O Library".
 
 require 'Test.More'
 
-plan(60)
+plan(65)
 
 like(io.stdin, '^file %(0?[Xx]?%x+%)$', "variable stdin")
 
@@ -63,11 +63,20 @@ error_like(function () io.close(f) end,
            "^[^:]+:%d+: attempt to use a closed file",
            "function close (closed)")
 
+if arg[-1] == 'luajit' then
+    todo("LuaJIT TODO. open mode")
+end
+error_like(function () io.open('file.txt', 'baz') end,
+           "^[^:]+:%d+: invalid mode 'baz' %(should match '%[rwa%]%%%+%?b%?'%)",
+           "function open (bad mode)")
+
 is(io.type("not a file"), nil, "function type")
 f = io.open('file.txt')
 is(io.type(f), 'file')
+like(tostring(f), '^file %(0?[Xx]?%x+%)$')
 io.close(f)
 is(io.type(f), 'closed file')
+is(tostring(f), 'file (closed)')
 
 is(io.stdin, io.input(), "function input")
 is(io.stdin, io.input(nil))
@@ -85,12 +94,12 @@ os.remove('output.new')
 f = io.popen([[perl -e "print 'standard output'"]])
 is(io.type(f), 'file', "popen (read)")
 is(f:read(), "standard output")
-io.close(f)
+is(io.close(f), true)
 
 f = io.popen([[perl -pe "s/e/a/"]], 'w')
 is(io.type(f), 'file', "popen (write)")
 f:write("# hello\n") -- not tested : hallo
-f:close()
+is(io.close(f), true)
 
 for line in io.lines('file.txt') do
     is(line, "file with text", "function lines(filename)")
@@ -142,16 +151,12 @@ is(s1, "file with text")
 is(s2, nil)
 f:close()
 
-if arg[-1] == 'luajit' then
-    skip("LuaJIT TODO. read *L.", 3)
-else
-    f = io.open('file.txt')
-    s1, s2 = f:read('*L', '*L')
-    is(s1:len(), 15, "method read *L")
-    is(s1, "file with text\n")
-    is(s2, nil)
-    f:close()
-end
+f = io.open('file.txt')
+s1, s2 = f:read('*L', '*L')
+is(s1:len(), 15, "method read *L")
+is(s1, "file with text\n")
+is(s2, nil)
+f:close()
 
 f = io.open('file.txt')
 n1, n2 = f:read('*n', '*n')

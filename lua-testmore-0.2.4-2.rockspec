@@ -1,17 +1,17 @@
 -- This file was automatically generated for the LuaDist project.
 
 package = 'lua-TestMore'
-version = '0.2.3-2'
+version = '0.2.4-2'
 -- LuaDist source
 source = {
-  tag = "0.2.3-2",
+  tag = "0.2.4-2",
   url = "git://github.com/LuaDist-testing/lua-testmore.git"
 }
 -- Original source
 -- source = {
---     url = 'http://cloud.github.com/downloads/fperrad/lua-TestMore/lua-testmore-0.2.3.tar.gz',
---     md5 = '86a294ad119fd1b5b5ffcecc0862bf55',
---     dir = 'lua-TestMore-0.2.3',
+--     url = 'http://cloud.github.com/downloads/fperrad/lua-TestMore/lua-testmore-0.2.4.tar.gz',
+--     md5 = 'cb5578f3a2c99d4fc163c461169b0ba9',
+--     dir = 'lua-TestMore-0.2.4',
 -- }
 description = {
     summary = "an Unit Testing Framework",
@@ -41,10 +41,11 @@ dependencies = {
 build = {
     type = 'builtin',
     modules = {
-        ['Test.Builder']             = 'src/Test/Builder.lua',
-        ['Test.Builder.Tester']      = 'src/Test/Builder/Tester.lua',
-        ['Test.Builder.Tester.File'] = 'src/Test/Builder/Tester/File.lua',
-        ['Test.More']                = 'src/Test/More.lua',
+        ['Test.Builder']                = 'src/Test/Builder.lua',
+        ['Test.Builder.SocketOutput']   = 'src/Test/Builder/SocketOutput.lua',
+        ['Test.Builder.Tester']         = 'src/Test/Builder/Tester.lua',
+        ['Test.Builder.Tester.File']    = 'src/Test/Builder/Tester/File.lua',
+        ['Test.More']                   = 'src/Test/More.lua',
     },
     copy_directories = { 'doc', 'test', 'test_lua51', 'test_lua52' },
 }

@@ -3,7 +3,7 @@
 -- lua-TestMore : <http://fperrad.github.com/lua-TestMore/>
 --
 
-local loadstring = loadstring
+local loadstring = loadstring or load
 local pairs = pairs
 local pcall = pcall
 local require = require
@@ -362,9 +362,9 @@ end
 _G.Test = _G.Test or {}
 _G.Test.More = m
 
-m._VERSION = "0.2.3"
+m._VERSION = "0.2.4"
 m._DESCRIPTION = "lua-TestMore : an Unit Testing Framework"
-m._COPYRIGHT = "Copyright (c) 2009-2010 Francois Perrad"
+m._COPYRIGHT = "Copyright (c) 2009-2011 Francois Perrad"
 return m
 --
 -- This library is licensed under the terms of the MIT/X11 license,

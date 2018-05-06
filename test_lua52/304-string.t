@@ -2,7 +2,7 @@
 --
 -- lua-TestMore : <http://fperrad.github.com/lua-TestMore/>
 --
--- Copyright (C) 2009-2010, Perrad Francois
+-- Copyright (C) 2009-2011, Perrad Francois
 --
 -- This code is licensed under the terms of the MIT/X11 license,
 -- like Lua itself.
@@ -31,7 +31,7 @@ See "Programming in Lua", section 20 "The String Library".
 
 require 'Test.More'
 
-plan(107)
+plan(111)
 
 is(string.byte('ABC'), 65, "function byte")
 is(string.byte('ABC', 2), 66)
@@ -49,16 +49,20 @@ is(s:byte(2), 66, "method s:byte")
 is(string.char(65, 66, 67), 'ABC', "function char")
 is(string.char(), '')
 
-if arg[-1] == 'luajit' then
-    skip("LuaJIT intentional. Cannot dump functions.", 2)
-else
-    d = string.dump(plan)
-    type_ok(d, 'string', "function dump")
+error_like(function () string.char(0, 'bad') end,
+           "^[^:]+:%d+: bad argument #2 to 'char' %(number expected, got string%)",
+           "function char (bad arg)")
 
-    error_like(function () string.dump(print) end,
-               "^[^:]+:%d+: unable to dump given function",
-               "function dump (C function)")
-end
+error_like(function () string.char(0, 9999) end,
+           "^[^:]+:%d+: bad argument #2 to 'char' %(invalid value%)",
+           "function char (invalid)")
+
+d = string.dump(plan)
+type_ok(d, 'string', "function dump")
+
+error_like(function () string.dump(print) end,
+           "^[^:]+:%d+: unable to dump given function",
+           "function dump (C function)")
 
 s = "hello world"
 eq_array({string.find(s, "hello")}, {1, 5}, "function find (mode plain)")
@@ -160,7 +164,7 @@ is(string.gsub("hello world", "(%w+)", "%1 %1"), "hello hello world world", "fun
 is(string.gsub("hello world", "%w+", "%0 %0", 1), "hello hello world")
 is(string.gsub("hello world from Lua", "(%w+)%s*(%w+)", "%2 %1"), "world hello Lua from")
 is(string.gsub("home = $HOME, user = $USER", "%$(%w+)", string.reverse), "home = EMOH, user = RESU")
-is(string.gsub("4+5 = $return 4+5$", "%$(.-)%$", function (s) return loadstring(s)() end), "4+5 = 9")
+is(string.gsub("4+5 = $return 4+5$", "%$(.-)%$", function (s) return load(s)() end), "4+5 = 9")
 local t = {name='lua', version='5.1'}
 is(string.gsub("$name-$version.tar.gz", "%$(%w+)", t), "lua-5.1.tar.gz")
 
@@ -259,6 +263,10 @@ is(string.rep('ab', 3), 'ababab', "function rep")
 is(string.rep('ab', 0), '')
 is(string.rep('ab', -1), '')
 is(string.rep('', 5), '')
+if arg[-1] == 'luajit' then
+    todo("LuaJIT TODO. rep with sep", 1)
+end
+is(string.rep('ab', 3, ','), 'ab,ab,ab', "with sep")
 
 is(string.reverse('abcde'), 'edcba', "function reverse")
 is(string.reverse('abcd'), 'dcba')
@@ -267,6 +275,7 @@ is(string.reverse(''), '')
 is(string.sub('abcde', 1, 2), 'ab', "function sub")
 is(string.sub('abcde', 3, 4), 'cd')
 is(string.sub('abcde', -2), 'de')
+is(string.sub('abcde', 3, 2), '')
 
 is(string.upper('Test'), 'TEST', "function upper")
 is(string.upper('TeSt'), 'TEST')
