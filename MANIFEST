@@ -1,10 +1,8 @@
 CHANGES
-CMakeLists.txt
 COPYRIGHT
 MANIFEST
 Makefile
 README.md
-dist.cmake
 dist.info
 doc/Makefile
 doc/index.html
@@ -41,6 +39,14 @@ test/require_ok.t
 test/skip.t
 test/skipall.t
 test/socket.t
+test/subtest/args.t
+test/subtest/basic.t
+test/subtest/die.t
+test/subtest/for_loadfile_t.test
+test/subtest/implicit_done.t
+test/subtest/loadfile.t
+test/subtest/plan.t
+test/subtest/singleton.t
 test/todo.t
 test/type_ok.t
 test_lua51/000-sanity.t
