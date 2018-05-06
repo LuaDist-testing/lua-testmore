@@ -23,7 +23,7 @@ description = {
 
         It supplies a Test Suite for Lua itself.
     ]],
-    homepage = 'http://testmore.luaforge.net/',
+    homepage = 'http://fperrad.github.com/lua-TestMore/',
     maintainer = 'Francois Perrad',
     license = 'MIT/X11'
 }
@@ -31,11 +31,12 @@ dependencies = {
     'lua >= 5.1',
 }
 build = {
-    type = 'builtin',
+    type = 'none',
     modules = {
-        ['Test.Builder']        = 'src/Test/Builder.lua',
-        ['Test.Builder.Tester'] = 'src/Test/Builder/Tester.lua',
-        ['Test.More']           = 'src/Test/More.lua',
+        ['Test.Builder']             = 'src/Test/Builder.lua',
+        ['Test.Builder.Tester']      = 'src/Test/Builder/Tester.lua',
+        ['Test.Builder.Tester.File'] = 'src/Test/Builder/Tester/File.lua',
+        ['Test.More']                = 'src/Test/More.lua',
     },
-    copy_directories = { 'doc', 'test', 'test_lua51' },
+    copy_directories = { 'doc', 'test', 'test_lua51', 'test_lua52' },
 }

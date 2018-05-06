@@ -64,7 +64,7 @@
 <a href="http://search.cpan.org/~mschwern/Test-Simple/">Test::More</a>.</p>
 
 <p>It uses the
-<a href="http://search.cpan.org/~petdance/TAP/TAP.pm">Test Anything Protocol</a>
+<a href="http://en.wikipedia.org/wiki/Test_Anything_Protocol">Test Anything Protocol</a>
 as output, that allows a compatibility with the Perl QA ecosystem.<br />
 For example,
 <a href="http://search.cpan.org/~andya/Test-Harness/bin/prove">prove</a>
@@ -96,7 +96,7 @@ or <strong>skipped</strong>.</p>
 
 <h4>Bibliography :</h4>
 
-<p>Ian Langworth, chromatic, "Perl Testing" O'Reilly, 2005</p>
+<p>Ian Langworth, chromatic, <a href="http://oreilly.com/catalog/9780596100926">Perl Testing</a> O'Reilly, 2005</p>
 
 <h2><a name="download"></a>Download</h2>
 
@@ -112,10 +112,13 @@ or <strong>skipped</strong>.</p>
 luarocks install lua-testmore
 </pre>
 
-<p>If you prefer to install manually, just copy the files from /src.
-There are no building stage, lua-TestMore is a pure Lua module.</p>
+<p>or manually, with:</p>
 
-<h2><a name="testsuite"></a>The Lua Test Suite</h2>
+<pre class="example">
+make install
+</pre>
+
+<h2><a name="testsuite"></a>The Lua Test Suite (5.1 &amp; 5.2)</h2>
 
 <p>This suite is usable with :</p>
 <ul>
@@ -126,7 +129,8 @@ There are no building stage, lua-TestMore is a pure Lua module.</p>
 </ul>
 
 <p>It gives this <a href="cover_lua514/src/index.html">coverage</a>
-with Lua 5.1.4.</p>
+with Lua 5.1.4 and this <a href="cover_lua520/src/index.html">coverage</a>
+with Lua 5.2.0.</p>
 
 <p>Contribute by sending the result from your platform :</p>
 
@@ -136,12 +140,12 @@ make smolder
 </pre>
 
 <p>They are stored
-<a href="http://smolder.plusthree.com/app/public_projects/smoke_reports/12">here</a>
+<a href="http://smolder.parrot.org/app/projects/smoke_reports/7">here</a>
 by Smolder.</p>
 
 <h2><a name="license"></a>Copyright and License</h2>
 
-<p>Copyright &copy; 2009 Fran&ccedil;ois Perrad
+<p>Copyright &copy; 2009-2010 Fran&ccedil;ois Perrad
 <a href="http://www.ohloh.net/accounts/4780?ref=Rank">
   <img alt="ohloh profile for Fran&ccedil;ois Perrad"
        height="24" width="32" style="border-width:0"
