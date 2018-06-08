@@ -1,17 +1,17 @@
 -- This file was automatically generated for the LuaDist project.
 
 package = 'lua-TestMore'
-version = '0.3.2-1'
+version = '0.3.3-1'
 -- LuaDist source
 source = {
-  tag = "0.3.2-1",
+  tag = "0.3.3-1",
   url = "git://github.com/LuaDist-testing/lua-testmore.git"
 }
 -- Original source
 -- source = {
---     url = 'http://sites.google.com/site/fperrad/lua-testmore-0.3.2.tar.gz',
---     md5 = 'c38d17e2e530c5de18719e8db8bbef2e',
---     dir = 'lua-TestMore-0.3.2',
+--     url = 'http://github.com/fperrad/lua-testmore/raw/releases/lua-testmore-0.3.3.tar.gz',
+--     md5 = '9bb6f400eb4e7b875f9518133b5a053f',
+--     dir = 'lua-TestMore-0.3.3',
 -- }
 description = {
     summary = "an Unit Testing Framework",
@@ -31,7 +31,7 @@ description = {
 
         It supplies a Test Suite for Lua itself.
     ]],
-    homepage = 'http://fperrad.github.com/lua-TestMore/',
+    homepage = 'http://fperrad.github.io/lua-TestMore/',
     maintainer = 'Francois Perrad',
     license = 'MIT/X11'
 }
@@ -47,5 +47,5 @@ build = {
         ['Test.Builder.Tester.File']    = 'src/Test/Builder/Tester/File.lua',
         ['Test.More']                   = 'src/Test/More.lua',
     },
-    copy_directories = { 'doc', 'test', 'test_lua51', 'test_lua52', 'test_lua53' },
+    copy_directories = { 'docs', 'test', 'test_lua51', 'test_lua52', 'test_lua53' },
 }

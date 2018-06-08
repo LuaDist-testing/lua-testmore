@@ -4,12 +4,11 @@ MANIFEST
 Makefile
 README.md
 dist.info
-doc/Makefile
-doc/doc.css
-doc/index.html
-doc/socketoutput.html
-doc/testbuilder.html
-doc/testmore.html
+docs/index.md
+docs/socketoutput.md
+docs/testbuilder.md
+docs/testmore.md
+mkdocs.yml
 rockspec.in
 src/Test/Builder.lua
 src/Test/Builder/NoOutput.lua

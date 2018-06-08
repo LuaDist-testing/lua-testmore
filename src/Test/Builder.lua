@@ -19,7 +19,7 @@ local tonumber = tonumber
 local tostring = tostring
 local type = type
 
-_ENV = nil
+local _ENV = nil
 local m = {}
 
 local testout = io and io.stdout
@@ -71,10 +71,10 @@ function m.create ()
     return o
 end
 
-local test
+local singleton_test
 function m.new ()
-    test = test or m.create()
-    return test
+    singleton_test = singleton_test or m.create()
+    return singleton_test
 end
 
 local function in_todo (self)
@@ -385,7 +385,7 @@ end
 
 return m
 --
--- Copyright (c) 2009-2015 Francois Perrad
+-- Copyright (c) 2009-2018 Francois Perrad
 --
 -- This library is licensed under the terms of the MIT/X11 license,
 -- like Lua itself.
