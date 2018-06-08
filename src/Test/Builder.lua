@@ -25,6 +25,9 @@ local m = {}
 local testout = io and io.stdout
 local testerr = io and (io.stderr or io.stdout)
 
+testout:setvbuf('no')
+testerr:setvbuf('no')
+
 function m.puts (f, str)
     f:write(str)
 end
@@ -103,7 +106,7 @@ function m:subtest (name, func)
     if type(func) ~= 'function' then
         error("subtest()'s second argument must be a function")
     end
-    self:diag('Subtest: ' .. name)
+    self:note('Subtest: ' .. name)
     local child = self:child(name)
     local parent = self.data
     self.data = child.data

@@ -1,5 +1,9 @@
 Revision history for lua-TestMore
 
+0.3.4  Sat Mar  3 12:30:00 2018
+	subtest() use note() instead of diag() (thanks to Ilya Chesnokov)
+	disable buffering for output filehandles (thanks to Ilya Chesnokov)
+
 0.3.3  Sat Jan 20 17:30:00 2018
 	shadow _ENV
 	add Debian package infrastructure
