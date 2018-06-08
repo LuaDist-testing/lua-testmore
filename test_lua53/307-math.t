@@ -31,7 +31,7 @@ See "Programming in Lua", section 18 "The Mathematical Library".
 
 require 'Test.More'
 
-plan(73)
+plan(74)
 
 like(tostring(math.pi), '^3%.14', "variable pi")
 
@@ -100,6 +100,7 @@ else
 end
 
 like(math.log(47), '^3%.85', "function log")
+like(math.log(47, math.exp(1)), '^3%.85', "function log (base e)")
 like(math.log(47, 2), '^5%.554', "function log (base 2)")
 like(math.log(47, 10), '^1%.672', "function log (base 10)")
 

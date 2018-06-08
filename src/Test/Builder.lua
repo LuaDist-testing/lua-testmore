@@ -52,9 +52,9 @@ local function print_comment (self, f, ...)
         arg[k] = tostring(v)
     end
     local msg = tconcat(arg)
-    msg = gsub(msg, "\n", "\n# ")
-    msg = gsub(msg, "\n# \n", "\n#\n")
-    msg = gsub(msg, "\n# $", '')
+    msg = gsub(msg, "\n", "\n" .. self.indent .. "# ")
+    msg = gsub(msg, "\n" .. self.indent .. "# \n", "\n" .. self.indent .. "#\n")
+    msg = gsub(msg, "\n" .. self.indent .. "# $", '')
     _print_to_fh(self, f, "# ", msg)
 end
 

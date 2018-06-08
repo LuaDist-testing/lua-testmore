@@ -1,5 +1,8 @@
 Revision history for lua-TestMore
 
+0.3.5  Thu May 10 21:30:00 2018
+	fix indent with subtest (see issue #10)
+
 0.3.4  Sat Mar  3 12:30:00 2018
 	subtest() use note() instead of diag() (thanks to Ilya Chesnokov)
 	disable buffering for output filehandles (thanks to Ilya Chesnokov)

@@ -40,8 +40,10 @@ do
         print("ok " .. 3+i .. " - for ipairs")
     end
 
+    local i = 6
     for k in pairs(a) do
-        print("ok " .. 6+k .. " - for pairs")
+        i = i + 1
+        print("ok " .. i .. " - for pairs")
     end
 end
 

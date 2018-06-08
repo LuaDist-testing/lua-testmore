@@ -49,8 +49,10 @@ else
     print("ok 7 - for ipairs (hash)")
 end
 
+local i = 7
 for k in pairs(a) do
-    print("ok " .. 7+k .. " - for pairs")
+    i = i + 1
+    print("ok " .. i .. " - for pairs")
 end
 
 local i = 1

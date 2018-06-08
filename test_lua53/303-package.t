@@ -29,7 +29,7 @@ L<http://www.lua.org/manual/5.3/manual.html#6.3>.
 
 require 'Test.More'
 
-plan(26)
+plan(28)
 
 ok(package.loaded._G, "table package.loaded")
 ok(package.loaded.coroutine)
@@ -40,6 +40,8 @@ ok(package.loaded.package)
 ok(package.loaded.string)
 ok(package.loaded.table)
 
+type_ok(package.config, 'string')
+type_ok(package.cpath, 'string')
 type_ok(package.path, 'string')
 
 type_ok(package.preload, 'table', "table package.preload")

@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w#! /usr/bin/lua
+#! /usr/bin/lua
 
 require 'Test.More'
 
@@ -15,9 +15,16 @@ do
     local indented = tb:child()
     indented:plan'no_plan'
     indented:ok(true, "We're on 1")
+    indented:diag("We ran 4.1")
     indented:ok(true, "We're on 2")
+    indented:diag("We ran 4.2"
+            .. "\n still 4.2")
     indented:ok(true, "We're on 3" )
+    indented:diag("We ran 4.3"
+            .. "\n still 4.3\n"
+            .. "\n still 4.3\n")
     indented:done_testing()
+    indented:diag("We ran 4")
     indented:finalize()
 end
 for i = 7, 9 do
@@ -32,9 +39,17 @@ ok 2 - We're on 2
 ok 3 - We're on 3
 # We ran 3
     ok 1 - We're on 1
+    # We ran 4.1
     ok 2 - We're on 2
+    # We ran 4.2
+    #  still 4.2
     ok 3 - We're on 3
+    # We ran 4.3
+    #  still 4.3
+    #
+    #  still 4.3
     1..3
+    # We ran 4
 ok 4
 ok 5 - We're on 7
 ok 6 - We're on 8
