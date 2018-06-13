@@ -1,15 +1,15 @@
 -- This file was automatically generated for the LuaDist project.
 
 package = 'lua-TestMore'
-version = '0.3.5-1'
+version = '0.3.5-2'
 -- LuaDist source
 source = {
-  tag = "0.3.5-1",
-  url = "git://github.com/LuaDist-testing/lua-testmore.git"
+  url = "git://github.com/LuaDist-testing/lua-testmore.git",
+  tag = "0.3.5-2"
 }
 -- Original source
 -- source = {
---     url = 'http://github.com/fperrad/lua-testmore/raw/releases/lua-testmore-0.3.5.tar.gz',
+--     url = 'https://framagit.org/fperrad/lua-TestMore/raw/releases/lua-testmore-0.3.5.tar.gz',
 --     md5 = '323a8c7cb80d7ba57112fa7f87f797f5',
 --     dir = 'lua-TestMore-0.3.5',
 -- }
@@ -31,7 +31,7 @@ description = {
 
         It supplies a Test Suite for Lua itself.
     ]],
-    homepage = 'http://fperrad.github.io/lua-TestMore/',
+    homepage = 'http://fperrad.frama.io/lua-TestMore/',
     maintainer = 'Francois Perrad',
     license = 'MIT/X11'
 }
